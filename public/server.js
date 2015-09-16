@@ -5,8 +5,15 @@
 
 //On déclare les indépendances du serveur
 var express = require('express'),
-        http = require('http'),
+        fs = require('fs'),
+        https = require('https'),
         app = express();
+
+var path = require("path");
+
+var cert = fs.readFileSync(path.join(__dirname,'..','/private/SSL/servsnake.crt'));
+var key = fs.readFileSync(path.join(__dirname,'..', '/private/SSL/servsnake.key'));
+
 
 //On configure le serveur
 //app.configure(function(){
@@ -16,12 +23,12 @@ var express = require('express'),
 //app.use(express.static(__dirname));
 
 
-app.get('/', function(req, res, next){
+app.get('/', function(req, res){
     res.sendfile(__dirname+'/index.html');
 });
 
 //On lance le serveur HTTP
-app.server = http.createServer(app);
-app.server.listen(5900);
+app.server = https.createServer({key: key, cert: cert}, app);
+app.server.listen(1443);
 
-console.log('serveur lancé sur http://localhost:3000/');
+console.log('serveur lancé sur https://localhost:1443/');
